@@ -74,6 +74,7 @@
      useemptyheaderfooter (yes | no) 'no'
      linebefore (yes | no) 'no'
      linebefore-weight CDATA #IMPLIED
+     minlinesfornewsection CDATA #IMPLIED
      %pagebreakformatinfo;
      %frontmatterformatinfo;"
      >

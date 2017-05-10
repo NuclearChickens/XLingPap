@@ -5364,13 +5364,46 @@
                     <xsl:with-param name="sName" select="@id"/>
                 </xsl:call-template>
             </xsl:if>
+            <!-- If you don't want sections to start too close to the bottom of the page, 
+            set sectionTitleLayout/@minlinesfornewsection of publisher stylesheet (5-10 is a reasonable value). 
+            Xling will estimate the height of the title block and add this to your personalized value, then check to see whether 
+            the minimum space is available before placing a section on the page.  -->
+            <xsl:variable name="isLineBefore" select="$layoutInfo/sectionTitleLayout/@linebefore='yes'"/>
+            <xsl:variable name="linesForSection" select="$layoutInfo/sectionTitleLayout/@minlinesfornewsection"/>
+            <xsl:variable name="titleHeight" select="normalize-space(translate($layoutInfo/sectionTitleLayout/@font-size,'pt ',''))"/>
+            <xsl:variable name="titleSpaceBefore" select="normalize-space(translate($layoutInfo/sectionTitleLayout/@spacebefore,'pt ',''))"/>
+            <xsl:variable name="titleSpaceAfter" select="normalize-space(translate($layoutInfo/sectionTitleLayout/@spaceafter,'pt ',''))"/>
+            <xsl:variable name="spacingMultiplier">
+                <xsl:choose>
+                    <xsl:when test="$publisherStyleSheet/pageLayout/linespacing='double'"><xsl:text>2</xsl:text></xsl:when>
+                    <xsl:when test="$publisherStyleSheet/pageLayout/linespacing='spaceAndAHalf'"><xsl:text>1.5</xsl:text></xsl:when>
+                    <xsl:otherwise><xsl:text>1</xsl:text></xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name="titleHeightInLines" select="(($titleHeight+$titleSpaceBefore+$titleSpaceAfter) div 12)"/>
+            <xsl:variable name="minLinesInSection">
+                <xsl:choose>
+                    <xsl:when test="$isLineBefore and ($linesForSection > 0)">
+                        <xsl:value-of select="ceiling((1+$titleHeightInLines)+($linesForSection*$spacingMultiplier))"/>
+                    </xsl:when>
+                    <xsl:when test="$linesForSection">
+                        <xsl:value-of select="ceiling(($titleHeightInLines+($linesForSection*$spacingMultiplier)"/>
+                    </xsl:when>
+                    <xsl:when test="$isLineBefore">
+                        <xsl:value-of select="ceiling(1+$titleHeightInLines)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="ceiling($titleHeightInLines)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <tex:cmd name="XLingPaperneedspace" nl2="1">
+                <tex:parm>
+                    <xsl:value-of select="$minLinesInSection"/>
+                    <tex:cmd name="baselineskip" gr="0" nl2="0"/>
+                </tex:parm>
+            </tex:cmd>
             <xsl:if test="$layoutInfo/sectionTitleLayout/@linebefore='yes'">
-                <tex:cmd name="XLingPaperneedspace" nl2="1">
-                    <tex:parm>
-                        <xsl:text>3</xsl:text>
-                        <tex:cmd name="baselineskip" gr="0" nl2="0"/>
-                    </tex:parm>
-                </tex:cmd>
                 <tex:cmd name="noindent">
                     <tex:cmd name="rule" nl2="1">
                         <tex:parm>
