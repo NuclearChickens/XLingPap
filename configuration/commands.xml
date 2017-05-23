@@ -1506,6 +1506,28 @@ What we want is to load IE independently and to do a refresh so it will show the
 -->
         </cfg:process>
     </cfg:command>
+    <cfg:command name="applyXLingPapTikiTransform">
+        <cfg:process>
+            <cfg:copyDocument to="in.xml"/>
+            <cfg:transform file="in.xml" stylesheet="../transforms/XLingPapRemoveAnyContent.xsl" to="in2.xml"/>
+            <cfg:transform file="in2.xml" version="2.0" stylesheet="../transforms/XLingPapTiki.xsl" to="%{P}%{S}%{R}.txt">
+                <cfg:parameter name="sFileName">%{R}</cfg:parameter>
+            </cfg:transform>
+        </cfg:process>
+    </cfg:command>
+    <cfg:command name="ConvertSelectedTextToObjectTMenu">
+        <cfg:macro>
+            <cfg:sequence>
+                <cfg:pass>
+                    <!-- if no text has been selected, we do not do anything -->
+                    <cfg:command name="convert" parameter="object"/>
+                </cfg:pass>
+                <cfg:command name="convert" parameter="object"/>
+                <cfg:command name="putAttribute" parameter="type 'tmenu'" />
+                <cfg:command name="moveDotTo" parameter="nextTextNode"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
     <cfg:command name="applyXLingPapXHTMLTransform">
         <cfg:process>
             <cfg:copyDocument to="in.xml"/>

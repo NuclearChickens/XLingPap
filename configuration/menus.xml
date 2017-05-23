@@ -212,6 +212,14 @@
            <cfg:item command="ConvertProceedingsInfoToProceedingsCitation" label="Convert proceedings information to a procCitation element"/>
        </cfg:menu>
        <cfg:separator/>
+       <cfg:menu label="Experimental" command="">
+           <cfg:item command="applyXLingPapTikiTransform"
+               label="Produce _Tiki"/>
+           <cfg:item command="ConvertSelectedTextToObjectTMenu" label="Convert selected text to tmenu object">
+               <cfg:accelerator code="F12" modifiers="ctrl"/>
+           </cfg:item>    
+       </cfg:menu>
+       <cfg:separator/>
        <cfg:item command="showXLingPapUserDocumentation"
          label="Show XLingPaper User _Documentation"/>
 <!-- old one with icon
