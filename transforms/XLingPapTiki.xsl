@@ -114,7 +114,7 @@
     <xsl:template match="link">
         <xsl:text>(( </xsl:text>
         <xsl:value-of select=".[@href]"/>
-        <xsl:text> | </xsl:text>
+        <xsl:text>|</xsl:text>
         <xsl:value-of select="./text()"/>
         <xsl:text> ))</xsl:text>
     </xsl:template>
@@ -299,12 +299,16 @@
                 </xsl:choose>
                 <xsl:text>|</xsl:text>
             </xsl:if>
+        </xsl:if>
+        <xsl:call-template name="tikifyLink">
+            <xsl:with-param name="unclean" select="$secname"/>
+        </xsl:call-template>
+        <xsl:text>|</xsl:text>
+        <xsl:if test="$splitParts='1'">
             <xsl:call-template name="getHardSectionNumberOf">
                 <xsl:with-param name="nodes" select="//*[@id=$sref]" />
             </xsl:call-template>
         </xsl:if>
-        <xsl:value-of select="$secname"/>
-        <xsl:text>|</xsl:text>
         <xsl:value-of select="$secname"/>
         <xsl:text>))</xsl:text>
     </xsl:template>
@@ -331,7 +335,7 @@
             <xsl:otherwise><xsl:text>Contents</xsl:text></xsl:otherwise>
             </xsl:choose>    
         </xsl:variable>
-        <xsl:result-document method="text" href="{$folderPath}\{$projectname}{$contentsLabel}\{$projectname}_{$contentsLabel}.txt">
+        <xsl:result-document method="text" href="{$folderPath}\{$projectname}_{$contentsLabel}\{$projectname}_{$contentsLabel}">
             <xsl:choose>
                 <xsl:when test="/xlingpaper/styledPaper[1]/lingPaper[1]/frontMatter[1]/title[1]/titleContentChoices[1]/titleContent[1]">
                     <xsl:text>!</xsl:text>
@@ -398,14 +402,36 @@
                         <xsl:value-of select="./ancestor-or-self::part/shortTitle/text()"/>
                     </xsl:otherwise>
                 </xsl:choose>
+                <xsl:choose>
+                <xsl:when test="./ancestor-or-self::appendix/shortTitle/titleContentChoices[1]/titleContent[1]">
+                        <xsl:value-of select="./ancestor-or-self::appendix/shortTitle/titleContentChoices[1]/titleContent[1]/text()"
+                        />
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="./ancestor-or-self::appendix/shortTitle/text()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:text>|</xsl:text>
+                <!-- put these things here-->
+                <xsl:call-template name="tikifyLink">
+                    <xsl:with-param name="unclean" select="$secname"/>
+                </xsl:call-template>
                 <xsl:text>|</xsl:text>
                 <xsl:call-template name="getHardSectionNumber"/>
-                <xsl:value-of select="$secname"/>
-                <xsl:text>|</xsl:text>
                 <xsl:value-of select="$secname"/>
                 <xsl:text>))</xsl:text>
             </xsl:for-each>
         </xsl:result-document>
+    </xsl:template>
+    <xsl:template name="tikifyLink">
+        <xsl:param name="unclean"/>
+        <xsl:variable name="secNameUnderscore" select="replace($unclean, '[^0-9a-zA-Z:.-]+', '_')"/>
+        <xsl:variable name="secNamePunct" select="replace($secNameUnderscore, '([\.:])', '\\$1')"/>
+        <xsl:variable name="secNameParenL" select="replace($secNamePunct, '\(', '~040~')"/>
+        <xsl:variable name="secNameParenR" select="replace($secNameParenL, '\)', '~041~')"/>
+        <xsl:variable name="cleanedBracket" select="replace($secNameParenR, '\[', '[[')"/>
+        <xsl:text>#</xsl:text>
+        <xsl:value-of select="$cleanedBracket"/>
     </xsl:template>
     <xsl:template name="makeTikiXML">
         <xsl:if test="$splitParts='1'">
@@ -442,8 +468,13 @@
                                 <xsl:value-of select="$projectname"/>
                                 <xsl:text>_</xsl:text>
                                 <xsl:value-of select="$contentsLabel"/>
-                                <xsl:text>.txt</xsl:text>
+<!--                                <xsl:text>.txt</xsl:text>-->
                             </xsl:attribute>
+                            <xsl:element name="name">
+                                <xsl:value-of select="$projectname"/>
+                                <xsl:text>_</xsl:text>
+                                <xsl:value-of select="$contentsLabel"/>
+                            </xsl:element>
                             <xsl:element name="creator">
                                 <xsl:text>matthew_lee</xsl:text>
                             </xsl:element>
@@ -470,12 +501,6 @@
                                             select="//part[$partNum+0]/shortTitle[1]/titleContentChoices[1]/titleContent[1]/text()"
                                         />
                                     </xsl:when>
-                                    <xsl:when
-                                        test="//part[$partNum+0]/shortTitle[1]/titleContentChoices[1]/titleContent[1]/text()">
-                                        <xsl:value-of
-                                            select="//part[$partNum+0]/shortTitle[1]/titleContentChoices[1]/titleContent[1]/text()"
-                                        />
-                                    </xsl:when>
                                     <xsl:when test="//part[$partNum+0]/shortTitle[1]/text()">
                                         <xsl:value-of
                                             select="//part[$partNum+0]/shortTitle[1]/text()"/>
@@ -491,7 +516,6 @@
                                 <xsl:value-of select="$filename"/>
                                 <xsl:text>/</xsl:text>
                                 <xsl:value-of select="$filename"/>
-                                <xsl:text>.txt</xsl:text>
                             </xsl:attribute>
                             <xsl:element name="name">
                                 <xsl:value-of select="$filename"/>
@@ -547,7 +571,7 @@
                                     <xsl:value-of select="$filename"/>
                                     <xsl:text>/</xsl:text>
                                     <xsl:value-of select="$filename"/>
-                                    <xsl:text>.txt</xsl:text>
+<!--                                    <xsl:text>.txt</xsl:text>-->
                                 </xsl:attribute>
                             </xsl:attribute>
                             <xsl:element name="name">
@@ -668,10 +692,10 @@
                     <!-- last part -->
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempPrevShort"/>
-                    <xsl:text>| &lt;-- </xsl:text>
+                    <xsl:text>|&lt;-- </xsl:text>
                     <xsl:value-of select="$tempPrevTitle"/>
                     <xsl:text>))&#xa;</xsl:text>
-                    <xsl:text> | </xsl:text>
+                    <xsl:text>|</xsl:text>
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempFirstAppendixShort"/>
                     <xsl:text>|</xsl:text>
@@ -682,10 +706,10 @@
                     <!--  middle part -->
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempPrevShort"/>
-                    <xsl:text>| &lt;-- </xsl:text>
+                    <xsl:text>|&lt;-- </xsl:text>
                     <xsl:value-of select="$tempPrevTitle"/>
                     <xsl:text>)) </xsl:text>
-                    <xsl:text> | </xsl:text>
+                    <xsl:text>|</xsl:text>
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempNextShort"/>
                     <xsl:text>|</xsl:text>
@@ -703,10 +727,10 @@
                     <!-- First Appendix -->
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempLastPartShort"/>
-                    <xsl:text>| &lt;-- </xsl:text>
+                    <xsl:text>|&lt;-- </xsl:text>
                     <xsl:value-of select="$tempLastPartTitle"/>
                     <xsl:text>)) </xsl:text>
-                    <xsl:text> | </xsl:text>
+                    <xsl:text>|</xsl:text>
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempNextShort"/>
                     <xsl:text>|</xsl:text>
@@ -717,7 +741,7 @@
                     <!-- Last Appendix -->
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempPrevShort"/>
-                    <xsl:text>| &lt;-- </xsl:text>
+                    <xsl:text>|&lt;-- </xsl:text>
                     <xsl:value-of select="$tempPrevTitle"/>
                     <xsl:text>))&#xa;</xsl:text>
                 </xsl:when>
@@ -725,10 +749,10 @@
                     <!-- Middle Appendix -->
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempPrevShort"/>
-                    <xsl:text>| &lt;-- </xsl:text>
+                    <xsl:text>|&lt;-- </xsl:text>
                     <xsl:value-of select="$tempPrevTitle"/>
                     <xsl:text>)) </xsl:text>
-                    <xsl:text> | </xsl:text>
+                    <xsl:text>|</xsl:text>
                     <xsl:text>((</xsl:text>
                     <xsl:value-of select="$tempNextShort"/>
                     <xsl:text>|</xsl:text>
@@ -758,7 +782,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-            <xsl:result-document method="text" href="{$folderPath}{$filename}/{$filename}.txt">
+            <xsl:result-document method="text" href="{$folderPath}{$filename}/{$filename}">
                 <xsl:call-template name="makeTikiNav"/>
                 <xsl:apply-templates/>
                 <xsl:text>&#xa;</xsl:text>
@@ -788,7 +812,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-            <xsl:result-document method="text" href="{$folderPath}{$filenamea}/{$filenamea}.txt">
+            <xsl:result-document method="text" href="{$folderPath}{$filenamea}/{$filenamea}">
                 <xsl:call-template name="makeTikiNav"/>
                 <xsl:apply-templates/>
                 <xsl:text>&#xa;</xsl:text>
