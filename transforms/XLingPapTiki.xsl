@@ -173,9 +173,6 @@
         <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
-    <xsl:template match="shortTitle">
-        <!-- Skip This -->
-    </xsl:template>
     <xsl:template match="framedUnit">
         <xsl:text>&#xa;{BOX(bg="#FFE6FF" width="60%")}</xsl:text>
         <xsl:apply-templates/>
@@ -309,7 +306,9 @@
                 <xsl:with-param name="nodes" select="//*[@id=$sref]" />
             </xsl:call-template>
         </xsl:if>
-        <xsl:value-of select="$secname"/>
+        <xsl:variable name="secNameParenL" select="replace($secname, '\(', '~040~')"/>
+        <xsl:variable name="secNameParenR" select="replace($secNameParenL, '\)', '~041~')"/>
+        <xsl:value-of select="$secNameParenR"/>
         <xsl:text>))</xsl:text>
     </xsl:template>
     <xsl:template name="makeTikiContents">
@@ -418,7 +417,9 @@
                 </xsl:call-template>
                 <xsl:text>|</xsl:text>
                 <xsl:call-template name="getHardSectionNumber"/>
-                <xsl:value-of select="$secname"/>
+                <xsl:variable name="secNameParenL" select="replace($secname, '\(', '~040~')"/>
+                <xsl:variable name="secNameParenR" select="replace($secNameParenL, '\)', '~041~')"/>
+                <xsl:value-of select="$secNameParenR"/>
                 <xsl:text>))</xsl:text>
             </xsl:for-each>
         </xsl:result-document>
@@ -427,9 +428,7 @@
         <xsl:param name="unclean"/>
         <xsl:variable name="secNameUnderscore" select="replace($unclean, '[^0-9a-zA-Z:.-]+', '_')"/>
         <xsl:variable name="secNamePunct" select="replace($secNameUnderscore, '([\.:])', '\\$1')"/>
-        <xsl:variable name="secNameParenL" select="replace($secNamePunct, '\(', '~040~')"/>
-        <xsl:variable name="secNameParenR" select="replace($secNameParenL, '\)', '~041~')"/>
-        <xsl:variable name="cleanedBracket" select="replace($secNameParenR, '\[', '[[')"/>
+        <xsl:variable name="cleanedBracket" select="replace($secNamePunct, '\[', '[[')"/>
         <xsl:text>#</xsl:text>
         <xsl:value-of select="$cleanedBracket"/>
     </xsl:template>
