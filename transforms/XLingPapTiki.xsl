@@ -199,6 +199,7 @@
         <xsl:apply-templates/>
         <xsl:text> </xsl:text>
     </xsl:template>
+    <xsl:template match="style"/>
     <xsl:template match="text()">
         <xsl:variable name="cleanedBracket" select="replace(., '\[', '[[')"/>
         <xsl:value-of select="$cleanedBracket"/>
