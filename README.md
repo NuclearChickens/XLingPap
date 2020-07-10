@@ -4,6 +4,8 @@ This is a fork dedicated to being an unofficial guide for XLingPaper
 ## Table of Contents
 [Adding Text in XLingPaper](#adding-text-in-xlingpaper)
 
+[Download and Install XLingPaper and XMLmind XML Editor](#download-and-Install-XLingPaper-and-XMLmind-XML-Editor)
+
 ## Download and Install XLingPaper and XMLmind XML Editor
 
 Go to https://software.sil.org/xlingpaper/download/ and download the current version.
