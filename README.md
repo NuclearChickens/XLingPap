@@ -2,6 +2,7 @@
 This is a fork dedicated to being an unofficial guide for XLingPaper
 
 ## Table of Contents
+[Adding Text in XLingPaper](#adding-text-in-xlingpaper)
 
 ## Download and Install XLingPaper and XMLmind XML Editor
 
