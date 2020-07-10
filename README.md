@@ -1,6 +1,8 @@
 # XLingPaper
 This is a fork dedicated to being an unofficial guide for XLingPaper
 
+## Table of Contents
+
 ## Download and Install XLingPaper and XMLmind XML Editor
 
 Go to https://software.sil.org/xlingpaper/download/ and download the current version.
